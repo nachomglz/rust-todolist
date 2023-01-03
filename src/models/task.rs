@@ -4,7 +4,7 @@ mod Task {
         description: String,
     }
 
-    fn create_task(task_name: &str) {
+    fn create_task(task_name: &str) -> Result<boolean, io::Err> {
         println!("Creating task with the name: {}", task_name);
     }
     fn remove_task(task_name: &str) {
