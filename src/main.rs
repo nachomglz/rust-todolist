@@ -8,7 +8,7 @@ fn main() {
         _ => panic!("The argument name was not provided"),
     };
 
-    println!("The name of the new task is: {}", task_name);
+    // Once we have the new task's name, we have to create the task
 
     // The arg 1 is the name of the binary, so we have to get the arg 2 to get the name
 }
