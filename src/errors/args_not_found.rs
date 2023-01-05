@@ -1,15 +1,14 @@
 use std::error::Error;
 use std::fmt;
 
-// Create Error type and implement Debug trait
 #[derive(Debug)]
-struct ArgsNotFound {
+pub struct ArgsNotFound {
     message: String,
 }
 
 // Implement struct and create the `new` function
 impl ArgsNotFound {
-    fn new(msg: &str) -> ArgsNotFound {
+    pub fn new(msg: &str) -> ArgsNotFound {
         ArgsNotFound {
             message: msg.to_string(),
         }

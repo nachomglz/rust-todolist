@@ -1,16 +1,24 @@
-mod Task {
-    struct Task {
-        name: String,
-        description: String,
-    }
+pub struct Task {
+    pub name: String,
+    pub description: String,
+}
 
-    fn create_task(task_name: &str) -> Result<boolean, io::Err> {
-        println!("Creating task with the name: {}", task_name);
+impl Task {
+    pub fn show_task(&self) {
+        println!(
+            "Name: {n}, description: {d}",
+            n = self.name,
+            d = self.description
+        )
     }
-    fn remove_task(task_name: &str) {
-        println!("Removing task with the name: {}", task_name);
-    }
-    fn modify_task(task_name: &str) {
-        println!("Modifying task with the name: {}", task_name);
-    }
+}
+
+pub fn create_task(task_name: &str) {
+    println!("Creating task with the name: {}", task_name);
+}
+pub fn remove_task(task_name: &str) {
+    println!("Removing task with the name: {}", task_name);
+}
+pub fn modify_task(task_name: &str) {
+    println!("Modifying task with the name: {}", task_name);
 }
