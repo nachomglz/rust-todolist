@@ -3,8 +3,8 @@ use std::env;
 
 #[derive(Debug)]
 pub struct Argument {
-    name: String,
-    description: String,
+    pub name: String,
+    pub description: String,
 }
 
 impl Argument {

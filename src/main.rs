@@ -1,12 +1,13 @@
+use std::{fs, io::Write};
 use utils::arguments::Argument;
+use utils::functions::{add_task, create_data_dir, create_data_file};
 
 mod errors;
 mod models;
 mod utils;
 
 fn main() {
-    // Get arguments
-    if let Ok(arguments) = Argument::parse() {
-        println!("The arguments are: {:?}", arguments);
-    }
+    create_data_dir();
+    create_data_file();
+    add_task();
 }
