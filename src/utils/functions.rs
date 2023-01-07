@@ -1,23 +1,85 @@
 use crate::models::task::Task;
 use crate::utils::arguments::Argument;
-use std::{fs, io::Write};
+use serde_json;
+use std::{
+    env::current_exe,
+    fs::{self, metadata},
+    io::{BufReader, Write},
+};
 
-pub fn create_data_dir() -> bool {
-    match fs::create_dir("./data") {
-        Ok(_) => true,
-        _ => false,
+fn create_data_dir() {
+    let current_binary_dir = current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_owned();
+
+    match fs::create_dir_all(current_binary_dir + "/data") {
+        Err(e) => panic!("Error creating data directory: {:?}", e),
+        _ => (),
     }
 }
 
 pub fn create_data_file() {
-    if let Ok(mut file) = fs::File::create("data/db.json") {
-        match file.write_all("{\"tasks\":[{\"name\":\"Echar de comer a los perros\",\"description\":\"hay que comprar la comida!\"}]}".as_bytes()) {
-          Err(_) => panic!("There was an error writing to the file"),
-          _ => ()
+    let data_dir: String = current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_owned()
+        + "/data";
+    let data_path: String = data_dir.clone() + "/db.json";
+
+    if let Err(_) = metadata(&data_path) {
+        // The data file does not exist
+        if let Err(_) = metadata(data_dir) {
+            // The data directory doest not exist
+            create_data_dir()
         }
-    } else {
-        panic!("The file couldn't be created");
+        match fs::File::create(&data_path) {
+            Ok(mut file) => match file.write_all("[]".as_bytes()) {
+                Err(_) => panic!("Failed to create the file"),
+                _ => (),
+            },
+            Err(e) => {
+                println!("There was an error creating the data file: {:?}", e)
+            }
+        }
     }
+}
+
+fn read_data() -> Vec<Task> {
+    let data_path: String = get_data_file_path();
+    let file = fs::File::open(data_path).unwrap();
+    let reader = BufReader::new(file);
+    serde_json::from_reader(reader).unwrap()
+}
+
+fn write_data(task_list: Vec<Task>) {
+    let data_path = get_data_file_path();
+
+    // Parse task list to string json
+    if let Ok(json) = serde_json::to_string(&task_list) {
+        println!("The new json is: {:?}", json);
+        // Open data file
+        if let Ok(mut file) = fs::File::create(data_path) {
+            file.write_all(json.as_bytes()).unwrap();
+        }
+    }
+}
+
+fn get_data_file_path() -> String {
+    current_exe()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_owned()
+        + "/data/db.json"
 }
 
 pub fn add_task() {
@@ -39,6 +101,10 @@ pub fn add_task() {
             description: task_description,
         };
 
-        println!("This is the new Task: {:?}", new_task)
+        let mut task_list: Vec<Task> = read_data();
+        println!("The old task list is: {:?}", task_list);
+        task_list.push(new_task);
+
+        write_data(task_list);
     }
 }
